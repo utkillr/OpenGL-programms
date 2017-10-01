@@ -3,7 +3,7 @@ from vispy import app
 from vispy import gloo
 
 import shaders
-import coordinates
+from Surface import Surface
 
 class Canvas(app.Canvas):
 
@@ -15,9 +15,10 @@ class Canvas(app.Canvas):
 
         gloo.set_state(clear_color=(0, 0, 0, 1), depth_test=False, blend=False)
 
-        self.program = gloo.Program(shaders.vert_shader, shaders.frag_shader)
-        self.program['a_position'] = coordinates.points()
+        self.surface = Surface()
 
+        self.program = gloo.Program(shaders.vert_shader, shaders.frag_shader)
+        self.program['a_position'] = self.surface.position()
 
         self.activate_zoom()
         self.show()
@@ -29,8 +30,3 @@ class Canvas(app.Canvas):
     def on_draw(self, event):
         gloo.clear()
         self.program.draw('points')
-
-
-if __name__ == '__main__':
-    c = Canvas()
-    app.run()
