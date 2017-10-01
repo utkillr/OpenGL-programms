@@ -7,9 +7,11 @@ from Surface import Surface
 
 class Canvas(app.Canvas):
 
-    def __init__(self):
-        self.width = 600
-        self.height = 600
+    def __init__(self, size=(600, 600)):
+        self.width = size[0]
+        self.height = size[1]
+
+        self.time = 0
 
         app.Canvas.__init__(self, size=(self.width, self.height), title='Water surface simulator')
 
@@ -21,6 +23,7 @@ class Canvas(app.Canvas):
         self.program['a_position'] = self.surface.position()
         self.program['a_height'] = self.surface.height()
 
+        self.timer = app.Timer('auto', connect=self.on_timer, start=True)
         self.activate_zoom()
         self.show()
 
@@ -30,4 +33,14 @@ class Canvas(app.Canvas):
 
     def on_draw(self, event):
         gloo.clear()
+
+        self.program['a_height'] = self.surface.height(self.time)
+
         self.program.draw('points')
+
+    def on_timer(self, event):
+        self.time += 0.01
+        self.update()
+
+    def on_resize(self, event):
+        self.activate_zoom()
