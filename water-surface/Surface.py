@@ -11,7 +11,7 @@ class Surface(object):
 
         self.waves = []
         for each in range(nwave):
-            self.waves.append(Wave.random_wave())
+            self.waves.append(Wave.random_wave(nwave))
 
         shape = (self.size[0], self.size[1], 2)
         self.grid = np.zeros(shape, dtype=np.float32)
