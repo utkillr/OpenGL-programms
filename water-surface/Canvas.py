@@ -8,9 +8,11 @@ from Surface import Surface
 class Canvas(app.Canvas):
 
     def __init__(self, size=(600, 600)):
+        # app window dimensions
         self.width = size[0]
         self.height = size[1]
 
+        # initial time to count heights of points
         self.time = 0
 
         app.Canvas.__init__(self, size=(self.width, self.height), title='Water surface simulator')
@@ -40,6 +42,7 @@ class Canvas(app.Canvas):
 
     def on_timer(self, event):
         self.time += 0.01
+        # calls on_draw
         self.update()
 
     def on_resize(self, event):

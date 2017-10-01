@@ -1,6 +1,7 @@
 
 import numpy as np
 
+
 class Wave(object):
 
     def __init__(self, wave_vector, angular_frequency, phase, amplitude):
