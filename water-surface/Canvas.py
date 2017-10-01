@@ -19,6 +19,7 @@ class Canvas(app.Canvas):
 
         self.program = gloo.Program(shaders.vert_shader, shaders.frag_shader)
         self.program['a_position'] = self.surface.position()
+        self.program['a_height'] = self.surface.height()
 
         self.activate_zoom()
         self.show()

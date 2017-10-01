@@ -1,10 +1,16 @@
 
 vert_shader = """
 #version 120
+
 attribute vec2 a_position;
+attribute float a_height;
 
 void main(void) {
-    gl_Position = vec4(a_position.xy, 1, 1);
+
+    // map points [-1, 1] to points [1, 0]
+    // 1 is the farthest coordinate, 0 - the closest
+    float z = (1 - a_height) * 0.5;
+    gl_Position = vec4(a_position.xy, z, z);
 }
 """
 

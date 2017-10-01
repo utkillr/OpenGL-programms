@@ -19,4 +19,13 @@ class Surface(object):
 
         return self.grid
 
+    def height(self):
+        line_height = np.linspace(-1, 1, self.size[0], dtype=np.float32)
+
+        height = np.zeros(self.size, dtype=np.float32)
+
+        for i in range(self.size[1]):
+            height[i] = line_height
+
+        return height
 
