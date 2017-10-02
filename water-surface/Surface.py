@@ -31,9 +31,9 @@ class Surface(object):
 
     def coords(self):
         # N x 1 array
-        x = np.linspace(-1, 1, self.size[0])[:, None]
+        x = np.linspace(-1, 1, self.size[0])[:, np.newaxis]
         # 1 x N array
-        y = np.linspace(-1, 1, self.size[1])[None, :]
+        y = np.linspace(-1, 1, self.size[1])[np.newaxis, :]
 
         return x, y
 
