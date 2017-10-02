@@ -20,6 +20,7 @@ class Canvas(app.Canvas):
         gloo.set_state(clear_color=(0, 0, 0, 1), depth_test=False, blend=False)
 
         self.surface = Surface()
+        self.segments = gloo.IndexBuffer(self.surface.wireframe())
 
         self.program = gloo.Program(shaders.vert_shader, shaders.frag_shader)
         self.program['a_position'] = self.surface.position()
@@ -35,10 +36,9 @@ class Canvas(app.Canvas):
 
     def on_draw(self, event):
         gloo.clear()
-
         self.program['a_height'] = self.surface.height(self.time)
 
-        self.program.draw('points')
+        self.program.draw('lines', self.segments)
 
     def on_timer(self, event):
         self.time += 0.01
