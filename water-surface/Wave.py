@@ -12,9 +12,9 @@ class Wave(object):
 
 
 def random_wave(amplitude_normalization):
-    wave_vector = np.random.randn(2)
+    wave_vector = 5 * np.random.randn(2)
     angular_frequency = np.random.randn()
-    phase = 2 * np.pi * np.random.rand()
-    amplitude = np.random.rand() / amplitude_normalization
+    phase = 2 * np.pi * np.random.randn()
+    amplitude = np.random.randn() / amplitude_normalization
 
     return Wave(wave_vector, angular_frequency, phase, amplitude)
