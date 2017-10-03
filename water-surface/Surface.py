@@ -51,6 +51,8 @@ class Surface(object):
                                    y * wave.wave_vector[1] +
                                    time * wave.angular_frequency)
 
+        height[:, :] = np.minimum(height, 1)
+        height[:, :] = np.maximum(height, -1)
         return height
 
     def triangulation(self):
