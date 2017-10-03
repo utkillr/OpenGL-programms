@@ -5,6 +5,7 @@ from vispy import gloo
 import shaders
 from Surface import Surface
 
+
 class Canvas(app.Canvas):
 
     def __init__(self, size=(600, 600)):
@@ -20,7 +21,7 @@ class Canvas(app.Canvas):
         gloo.set_state(clear_color=(0, 0, 0, 1), depth_test=False, blend=False)
 
         self.surface = Surface()
-        self.segments = gloo.IndexBuffer(self.surface.wireframe())
+        self.triangles = gloo.IndexBuffer(self.surface.triangulation())
 
         self.program = gloo.Program(shaders.vert_shader, shaders.frag_shader)
         self.program['a_position'] = self.surface.position()
@@ -38,7 +39,7 @@ class Canvas(app.Canvas):
         gloo.clear()
         self.program['a_height'] = self.surface.height(self.time)
 
-        self.program.draw('lines', self.segments)
+        self.program.draw('lines', self.triangles)
 
     def on_timer(self, event):
         self.time += 0.01

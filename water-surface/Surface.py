@@ -1,11 +1,9 @@
-
 import numpy as np
 
 import Wave
 
 
 class Surface(object):
-
     def __init__(self, size=(100, 100), nwave=5):
         assert isinstance(size, tuple)
 
@@ -55,39 +53,35 @@ class Surface(object):
 
         return height
 
-    def wireframe(self):
+    def triangulation(self):
         # generates array with 2 cells
         # first cell is 2D array with x of each cell of original NxM array
         # for N = 3, M = 3 it's [[0, 0, 0], [1, 1, 1], [2, 2, 2]]
         # second - y
         # for N = 3, M = 3 it's [[0, 1, 2], [0, 1, 2], [0, 1, 2]]
-        left = np.indices((self.size[0] - 1, self.size[1]))
+        a = np.indices((self.size[0] - 1, self.size[1] - 1))
         # creates array [[[1]], [[0]]]
         # that way, for each x we add 1, for each y we add 0
-        right = left + np.array([1, 0])[:, np.newaxis, np.newaxis]
+        b = a + np.array([1, 0])[:, np.newaxis, np.newaxis]
+        c = a + np.array([1, 1])[:, np.newaxis, np.newaxis]
+        d = a + np.array([0, 1])[:, np.newaxis, np.newaxis]
 
-        horizontal = self.make_pairs(left, right, self.size)
-
-        # same for vertical lines
-        bottom = np.indices((self.size[0], self.size[1]-1))
-        top = bottom + np.array([0, 1])[:, np.newaxis, np.newaxis]
-        vertical = self.make_pairs(bottom, top, self.size)
-
-        return np.concatenate((horizontal, vertical), axis=0).astype(np.uint32)
-
-    @staticmethod
-    def make_pairs(pts1, pts2, size):
         # convert 3D array to 2D array of [[all x], [all y]]
         # -1 means that length is inferred from the length of original array
-        pts1 = pts1.reshape((2, -1))
-        pts2 = pts2.reshape((2, -1))
+        a = a.reshape((2, -1))
+        b = b.reshape((2, -1))
+        c = c.reshape((2, -1))
+        d = d.reshape((2, -1))
 
         # from 2D NxM array get 1D array, where arr[i * M + j] = old[i][j]
-        pts1 = np.ravel_multi_index(pts1, size)
-        pts2 = np.ravel_multi_index(pts2, size)
+        a = np.ravel_multi_index(a, self.size)
+        b = np.ravel_multi_index(b, self.size)
+        c = np.ravel_multi_index(c, self.size)
+        d = np.ravel_multi_index(d, self.size)
 
-        # For both arrays make 2D array, where each inner array contains single number from the original one
-        # Concatenate arrays so there will be [[l0, r0], ..., [li, ri]] array
-        return np.concatenate((pts1[..., np.newaxis], pts2[..., np.newaxis]), axis=-1)
+        # for each of three arrays make 2D array, where each inner array contains single number from the original one
+        # Concatenate arrays so there will be [[a0, b0, c0], ..., [ai, bi, ci]] array
+        abc = np.concatenate((a[..., None], b[..., None], c[..., None]), axis=-1)
+        acd = np.concatenate((a[..., None], c[..., None], d[..., None]), axis=-1)
 
-
+        return np.concatenate((abc, acd), axis=0).astype(np.uint32)
