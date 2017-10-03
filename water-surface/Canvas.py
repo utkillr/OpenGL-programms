@@ -39,7 +39,7 @@ class Canvas(app.Canvas):
         gloo.clear()
         self.program['a_height'] = self.surface.height(self.time)
 
-        self.program.draw('lines', self.triangles)
+        self.program.draw('triangles', self.triangles)
 
     def on_timer(self, event):
         self.time += 0.01
