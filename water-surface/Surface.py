@@ -66,33 +66,28 @@ class Surface(object):
         # that way, for each x we add 1, for each y we add 0
         right = left + np.array([1, 0])[:, np.newaxis, np.newaxis]
 
-        # convert 3D array to 2D array of [[all x], [all y]]
-        # -1 means that length is inferred from the length of original array
-        left = left.reshape((2, -1))
-        right = right.reshape((2, -1))
-
-        # from 2D NxM array get 1D array, where arr[i * M + j] = old[i][j]
-        left = np.ravel_multi_index(left, self.size)
-        right = np.ravel_multi_index(right, self.size)
-
-        # For both arrays make 2D array, where each inner array contains single number from the original one
-        # Concatenate arrays so there will be [[l0, r0], ..., [li, ri]] array
-        horizontal = np.concatenate((left[..., np.newaxis], right[..., np.newaxis]), axis=-1)
+        horizontal = self.make_pairs(left, right, self.size)
 
         # same for vertical lines
         bottom = np.indices((self.size[0], self.size[1]-1))
         top = bottom + np.array([0, 1])[:, np.newaxis, np.newaxis]
-
-        bottom = bottom.reshape((2, -1))
-        top = top.reshape((2, -1))
-
-        bottom = np.ravel_multi_index(bottom, self.size)
-        top_l = np.ravel_multi_index(top, self.size)
-
-        vertical = np.concatenate((bottom[..., np.newaxis], top_l[...,np.newaxis]), axis=-1)
+        vertical = self.make_pairs(bottom, top, self.size)
 
         return np.concatenate((horizontal, vertical), axis=0).astype(np.uint32)
 
+    @staticmethod
+    def make_pairs(pts1, pts2, size):
+        # convert 3D array to 2D array of [[all x], [all y]]
+        # -1 means that length is inferred from the length of original array
+        pts1 = pts1.reshape((2, -1))
+        pts2 = pts2.reshape((2, -1))
 
+        # from 2D NxM array get 1D array, where arr[i * M + j] = old[i][j]
+        pts1 = np.ravel_multi_index(pts1, size)
+        pts2 = np.ravel_multi_index(pts2, size)
+
+        # For both arrays make 2D array, where each inner array contains single number from the original one
+        # Concatenate arrays so there will be [[l0, r0], ..., [li, ri]] array
+        return np.concatenate((pts1[..., np.newaxis], pts2[..., np.newaxis]), axis=-1)
 
 
