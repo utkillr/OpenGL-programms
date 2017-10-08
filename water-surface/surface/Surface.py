@@ -105,3 +105,4 @@ class Surface(object):
     @staticmethod
     def ambient_color():
         return np.array([0.1, 0.1, 0.5], dtype=np.float32)
+
