@@ -1,8 +1,9 @@
 
 from Canvas import Canvas
 from vispy import app
-from surface.Surface import Surface
+from surface import Surface
+from surface import CircularWavesSurface
 
 if __name__ == '__main__':
-    c = Canvas(Surface(nwave=5, max_height=0.3))
+    c = Canvas(CircularWavesSurface.CircularWavesSurface())
     app.run()
