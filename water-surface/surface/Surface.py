@@ -1,10 +1,10 @@
 import numpy as np
 
-import Wave
+from surface import Wave
 
 
 class Surface(object):
-    def __init__(self, size=(100, 100), nwave=5):
+    def __init__(self, size=(100, 100), nwave=5, max_height=0.2):
         assert isinstance(size, tuple)
 
         self.size = size
@@ -12,7 +12,7 @@ class Surface(object):
         # retrieve nwave random waves and store it
         self.waves = []
         for each in range(nwave):
-            self.waves.append(Wave.random_wave(nwave))
+            self.waves.append(Wave.random_wave(nwave, max_height))
 
     def position(self):
         x, y = self.coords()
