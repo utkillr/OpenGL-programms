@@ -38,6 +38,7 @@ varying vec3 v_position;
 uniform vec3 u_sun_direction;
 uniform vec3 u_sun_color;
 uniform vec3 u_ambient_color;
+uniform sampler2D u_sky_texture;
 
 void main(void) {
     // camera is in point 'eye'
@@ -47,14 +48,20 @@ void main(void) {
     // count direction vector of reflected camera beam
     vec3 reflected = normalize(to_eye - 2 * v_normal * dot(v_normal, to_eye) / dot(v_normal, v_normal));
     
-    float directed_light = pow(max(0, -dot(u_sun_direction, reflected)), 16);
+    vec2 texture_coord = 0.25 * reflected.xy / reflected.z + (0.5, 0.5);
+    vec3 sky_color = texture2D(u_sky_texture, texture_coord).rgb;
+    
+    // float directed_light = pow(max(0, -dot(u_sun_direction, reflected)), 16);
     
     // Color is a summary of directed and diffuse colors
     // If brightness is very big, cut off redundant
-    vec3 rgb = clamp(u_sun_color * directed_light + u_ambient_color, 0.0, 1.0);
-
-    gl_FragColor = vec4(rgb, 1);
-}
+    // vec3 rgb = clamp(u_sun_color * directed_light + u_ambient_color, 0.0, 1.0);
+    // gl_FragColor = vec4(rgb, 1);
+    
+    vec3 rgb = sky_color;
+    gl_FragColor.rgb = clamp(rgb,0.0,1.0);
+    gl_FragColor.a = 1;
+    }
 """
 
 frag_shader_point = """
