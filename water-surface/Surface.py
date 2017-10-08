@@ -55,6 +55,20 @@ class Surface(object):
         height[:, :] = np.maximum(height, -1)
         return height
 
+    def normal(self, time=0):
+        x, y = self.coords()
+        shape = (self.size[0], self.size[1], 2)
+        grad = np.zeros(shape, dtype=np.float32)
+        for wave in self.waves:
+            delta_cos = -wave.amplitude * \
+                        np.sin(wave.phase +
+                               x * wave.wave_vector[0] +
+                               y * wave.wave_vector[1] +
+                               time * wave.angular_frequency)
+            grad[:, :, 0] += wave.wave_vector[0] * delta_cos
+            grad[:, :, 1] += wave.wave_vector[1] * delta_cos
+        return grad
+
     def triangulation(self):
         # generates array with 2 cells
         # first cell is 2D array with x of each cell of original NxM array
@@ -87,3 +101,7 @@ class Surface(object):
         acd = np.concatenate((a[..., None], c[..., None], d[..., None]), axis=-1)
 
         return np.concatenate((abc, acd), axis=0).astype(np.uint32)
+
+    @staticmethod
+    def ambient_color():
+        return np.array([0.1, 0.1, 0.5], dtype=np.float32)

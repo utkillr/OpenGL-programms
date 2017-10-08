@@ -4,6 +4,7 @@ from vispy import gloo
 
 import shaders
 from Surface import Surface
+from Sun import Sun
 
 
 class Canvas(app.Canvas):
@@ -18,14 +19,17 @@ class Canvas(app.Canvas):
 
         app.Canvas.__init__(self, size=(self.width, self.height), title='Water surface simulator')
 
-        gloo.set_state(clear_color=(0, 0, 0, 1), depth_test=False, blend=False)
+        gloo.set_state(clear_color=(0, 0, 0, 1), depth_test=True, blend=False)
 
         self.surface = Surface()
         self.triangles = gloo.IndexBuffer(self.surface.triangulation())
+        self.sun = Sun()
 
         self.program = gloo.Program(shaders.vert_shader, shaders.frag_shader)
         self.program['a_position'] = self.surface.position()
-        self.program['a_height'] = self.surface.height()
+        self.program['u_sun_direction'] = self.sun.direction()
+        self.program['u_sun_color'] = self.sun.color
+        self.program['u_ambient_color'] = Surface.ambient_color()
 
         self.timer = app.Timer('auto', connect=self.on_timer, start=True)
         self.activate_zoom()
@@ -38,7 +42,7 @@ class Canvas(app.Canvas):
     def on_draw(self, event):
         gloo.clear()
         self.program['a_height'] = self.surface.height(self.time)
-
+        self.program['a_normal'] = self.surface.normal(self.time)
         self.program.draw('triangles', self.triangles)
 
     def on_timer(self, event):
