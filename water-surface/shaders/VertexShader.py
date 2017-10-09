@@ -47,7 +47,7 @@ void main(void) {
     vec3 cr = cross(normal, from_eye);
     float d = 1 - u_alpha * u_alpha * dot(cr, cr);
     float c2 = sqrt(d);
-    vec3 refracted = normalize(u_alpha * cross(cr, normal) - normal * d);
+    vec3 refracted = normalize(u_alpha * cross(cr, normal) - normal * c2);
     float c1 = -dot(normal, from_eye);
     
     float t = (-u_bed_depth - v_position.z) / refracted.z;

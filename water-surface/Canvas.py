@@ -18,7 +18,7 @@ class Canvas(app.Canvas):
         # initial time to count heights of points
         self.time = 0
 
-        app.Canvas.__init__(self, size=(self.width, self.height), title='Water surface with clouds simulator')
+        app.Canvas.__init__(self, size=(self.width, self.height), title='Circular Waves Surface Simulator')
 
         self.surface = surface
         self.sky = io.read_png(sky)
@@ -145,6 +145,9 @@ class Canvas(app.Canvas):
 
     def on_mouse_press(self, event):
         self.drag_start = self.screen_to_gl_coordinates(event.pos)
+
+    def on_mouse_release(self, event):
+        self.drag_start = None
 
     def on_mouse_move(self, event):
         if not self.drag_start is None:
