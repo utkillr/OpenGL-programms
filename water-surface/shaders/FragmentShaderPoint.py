@@ -1,8 +1,3 @@
 
-frag_shader_point = """
-#version 120
-
-void main() {
-    gl_FragColor = vec4(1, 0, 0, 1);
-}
-"""
+with open("shaders/glsl/frag_shader_point.glsl") as file:
+    frag_shader_point = file.read()

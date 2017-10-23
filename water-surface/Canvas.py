@@ -34,7 +34,8 @@ class Canvas(app.Canvas):
         self.program['u_bed_texture'] = gloo.Texture2D(self.bed, wrapping='repeat', interpolation='linear')
         self.program['u_eye_height'] = 3
         self.program['u_alpha'] = 0.9
-        self.program['u_bed_depth'] = 1
+    #    self.program['u_bed_depth'] = 1
+        self.program["a_bed_depth"] = self.surface.bed_depths("diagonal")
         self.program['u_sun_direction'] = self.sun.normalized_direction()
         self.program['u_sun_diffused_color'] = self.sun.diffused_color()
         self.program['u_sun_reflected_color'] = self.sun.reflected_color()
@@ -97,6 +98,8 @@ class Canvas(app.Canvas):
         normal = self.surface.normal(self.time)
         self.program['a_height'] = height
         self.program['a_normal'] = normal
+
+
 
         # draw triangles
         gloo.set_state(depth_test=True)
