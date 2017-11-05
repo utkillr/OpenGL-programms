@@ -4,6 +4,7 @@ from surface import Wave
 
 
 class Surface(object):
+
     def __init__(self, size=(100, 100), nwave=5, max_height=0.2):
         assert isinstance(size, tuple)
 
@@ -105,26 +106,4 @@ class Surface(object):
     @staticmethod
     def ambient_color():
         return np.array([0.1, 0.1, 0.5], dtype=np.float32)
-
-    @staticmethod
-    def bed_depths(shape):
-        depths = np.ndarray([100, 100], dtype=np.float32)
-        if shape == "straight":
-            for i in range(depths.shape[0]):
-                for j in range(depths.shape[1]):
-                    if i <= 19: depths[i][j] = 1
-                    elif i >= 80: depths[i][j] = 5
-                    else:
-                        depths[i][j] = (i - 20) * 4 / 58 + 1
-
-        if shape == "random":
-            depths = Surface((100, 100), 5, 0.3).normal(0)[:, :, 0]
-
-        if shape == "linspace":
-            depths = np.linspace(-1.2, -0.6, 10000, dtype=np.float32).reshape([100, 100])
-
-        if shape == "beach":
-            depths = np.linspace(-0.3, 0.3, 10000, dtype=np.float32).reshape([100, 100])
-
-        return depths
 
