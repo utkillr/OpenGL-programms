@@ -150,7 +150,9 @@ class Canvas(app.Canvas):
         elif event.key == '6':
             if self.bed_type == "linspace":
                 self.bed_type = "beach"
-            else:
+            elif self.bed_type == "beach":
+                self.bed_type = "random"
+            elif self.bed_type == "random":
                 self.bed_type = "linspace"
             print("Bed type:", self.bed_type)
             self.apply_flags()

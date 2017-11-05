@@ -30,7 +30,7 @@ void main() {
 
     if (a_height < a_bed_depth) {
         v_position = vec3(a_position.xy, a_bed_depth);
-        v_bed_texture_coord = v_position.xy;
+        v_bed_texture_coord = v_position.xy + vec2(0.5, 0.5);
         beach = 1;
     } else {
         beach = 0;

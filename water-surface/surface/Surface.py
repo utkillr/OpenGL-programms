@@ -117,16 +117,8 @@ class Surface(object):
                     else:
                         depths[i][j] = (i - 20) * 4 / 58 + 1
 
-        if shape == "diagonal":
-            for i in range(depths.shape[0]):
-                for j in range(depths.shape[1]):
-                    if (i + j) <= 59: depths[i][j] = 1
-                    elif i + j >= 139: depths[i][j] = 5
-                    else:
-                        depths[i][j] = (i + j - 60) * 4 / 78 + 1
-
         if shape == "random":
-            depths = np.ndarray.astype(np.random.rand(100, 100) * 4 + 1, dtype=np.float32)
+            depths = Surface((100, 100), 5, 0.3).normal(0)[:, :, 0]
 
         if shape == "linspace":
             depths = np.linspace(-1.2, -0.6, 10000, dtype=np.float32).reshape([100, 100])
