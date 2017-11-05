@@ -35,7 +35,7 @@ class Canvas(app.Canvas):
         self.program['u_eye_height'] = 3
         self.program['u_alpha'] = 0.9
     #    self.program['u_bed_depth'] = 1
-        self.program["a_bed_depth"] = self.surface.bed_depths("diagonal")
+        self.program["a_bed_depth"] = self.surface.bed_depths("beach")
         self.program['u_sun_direction'] = self.sun.normalized_direction()
         self.program['u_sun_diffused_color'] = self.sun.diffused_color()
         self.program['u_sun_reflected_color'] = self.sun.reflected_color()
@@ -56,6 +56,8 @@ class Canvas(app.Canvas):
         self.bed_flag = True
         self.depth_flag = True
         self.sky_flag = True
+        self.bed_type = "beach"
+        self.stop_flag = False
         self.apply_flags()
 
         self.timer = app.Timer('auto', connect=self.on_timer, start=True)
@@ -86,6 +88,7 @@ class Canvas(app.Canvas):
         self.program["u_bed_mult"] = 1 if self.bed_flag else 0
         self.program["u_depth_mult"] = 1 if self.depth_flag else 0
         self.program["u_sky_mult"] = 1 if self.sky_flag else 0
+        self.program["a_bed_depth"] = self.surface.bed_depths(self.bed_type)
 
     def activate_zoom(self):
         self.width, self.height = self.size
@@ -99,22 +102,21 @@ class Canvas(app.Canvas):
         self.program['a_height'] = height
         self.program['a_normal'] = normal
 
-
-
         # draw triangles
         gloo.set_state(depth_test=True)
         self.program.draw('triangles', self.triangles)
 
-        # get glares
+        # draw points
         if self.are_points_visible:
             self.program_point['a_height'] = height
             gloo.set_state(depth_test=False)
             self.program_point.draw('points')
 
     def on_timer(self, event):
-        self.time += 0.01
-        # calls on_draw
-        self.update()
+        if not self.stop_flag:
+            self.time += 0.01
+            # calls on_draw
+            self.update()
 
     def on_resize(self, event):
         self.activate_zoom()
@@ -145,6 +147,17 @@ class Canvas(app.Canvas):
             self.reflected_flag = not self.reflected_flag
             print("Show reflected image of sun:", self.reflected_flag)
             self.apply_flags()
+        elif event.key == '6':
+            if self.bed_type == "linspace":
+                self.bed_type = "beach"
+            else:
+                self.bed_type = "linspace"
+            print("Bed type:", self.bed_type)
+            self.apply_flags()
+        elif event.key == 't':
+            self.stop_flag = not self.stop_flag
+            print("Stop:", self.stop_flag)
+            self.apply_flags()
 
     def on_mouse_press(self, event):
         self.drag_start = self.screen_to_gl_coordinates(event.pos)
@@ -159,6 +172,14 @@ class Canvas(app.Canvas):
             self.drag_start = pos
             self.set_camera()
             self.update()
+
+    def on_mouse_wheel(self, event):
+        if event.delta[1] > 0:
+            if self.program['u_eye_height'] > 0.5:
+                self.program['u_eye_height'] -= event.delta[1] * 0.2
+        else:
+            if self.program['u_eye_height'] < 5:
+                self.program['u_eye_height'] -= event.delta[1] * 0.2
 
     def screen_to_gl_coordinates(self, pos):
         return 2 * np.array(pos) / np.array(self.size) - 1

@@ -129,7 +129,10 @@ class Surface(object):
             depths = np.ndarray.astype(np.random.rand(100, 100) * 4 + 1, dtype=np.float32)
 
         if shape == "linspace":
-            depths = np.linspace(1, 5, 10000, dtype=np.float32).reshape([100, 100])
+            depths = np.linspace(-1.2, -0.6, 10000, dtype=np.float32).reshape([100, 100])
+
+        if shape == "beach":
+            depths = np.linspace(-0.3, 0.3, 10000, dtype=np.float32).reshape([100, 100])
 
         return depths
 
