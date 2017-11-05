@@ -6,6 +6,7 @@ import numpy as np
 
 import shaders
 from surface.Sun import Sun
+from surface.Bed import Bed
 
 
 class Canvas(app.Canvas):
@@ -25,6 +26,7 @@ class Canvas(app.Canvas):
         self.bed = io.read_png(bed)
         self.triangles = gloo.IndexBuffer(self.surface.triangulation())
         self.sun = Sun(np.asarray([0, 1, 0.1], dtype=np.float32))
+        self.bed_resolver = Bed()
 
         position = self.surface.position()
 
@@ -35,7 +37,7 @@ class Canvas(app.Canvas):
         self.program['u_eye_height'] = 3
         self.program['u_alpha'] = 0.9
     #    self.program['u_bed_depth'] = 1
-        self.program["a_bed_depth"] = self.surface.bed_depths("beach")
+        self.program["a_bed_depth"] = self.bed_resolver.bed_depths("beach")
         self.program['u_sun_direction'] = self.sun.normalized_direction()
         self.program['u_sun_diffused_color'] = self.sun.diffused_color()
         self.program['u_sun_reflected_color'] = self.sun.reflected_color()
@@ -88,7 +90,7 @@ class Canvas(app.Canvas):
         self.program["u_bed_mult"] = 1 if self.bed_flag else 0
         self.program["u_depth_mult"] = 1 if self.depth_flag else 0
         self.program["u_sky_mult"] = 1 if self.sky_flag else 0
-        self.program["a_bed_depth"] = self.surface.bed_depths(self.bed_type)
+        self.program["a_bed_depth"] = self.bed_resolver.bed_depths(self.bed_type)
 
     def activate_zoom(self):
         self.width, self.height = self.size
@@ -124,30 +126,33 @@ class Canvas(app.Canvas):
     def on_key_press(self, event):
         if event.key == 'Escape':
             self.close()
+
         elif event.key == ' ':
             self.are_points_visible = not self.are_points_visible
             print("Show lattice vertices:", self.are_points_visible)
+
         elif event.key == '1':
             self.diffused_flag = not self.diffused_flag
             print("Show sun diffused light:", self.diffused_flag)
             self.apply_flags()
+
         elif event.key == '2':
             self.bed_flag = not self.bed_flag
             print("Show refracted image of seabed:", self.bed_flag)
-            self.apply_flags()
+
         elif event.key == '3':
             self.depth_flag = not self.depth_flag
             print("Show ambient light in water:", self.depth_flag)
-            self.apply_flags()
+
         elif event.key == '4':
             self.sky_flag = not self.sky_flag
             print("Show reflected image of sky:", self.sky_flag)
-            self.apply_flags()
+
         elif event.key == '5':
             self.reflected_flag = not self.reflected_flag
             print("Show reflected image of sun:", self.reflected_flag)
-            self.apply_flags()
-        elif event.key == '6':
+
+        elif event.key == 's':
             if self.bed_type == "linspace":
                 self.bed_type = "beach"
             elif self.bed_type == "beach":
@@ -155,11 +160,15 @@ class Canvas(app.Canvas):
             elif self.bed_type == "random":
                 self.bed_type = "linspace"
             print("Bed type:", self.bed_type)
-            self.apply_flags()
-        elif event.key == 't':
+
+        elif event.key == 'r':
+            self.bed_resolver.new_random_surface()
+
+        elif event.key == 'p':
             self.stop_flag = not self.stop_flag
             print("Stop:", self.stop_flag)
-            self.apply_flags()
+
+        self.apply_flags()
 
     def on_mouse_press(self, event):
         self.drag_start = self.screen_to_gl_coordinates(event.pos)
