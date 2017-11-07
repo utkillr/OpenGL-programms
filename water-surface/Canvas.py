@@ -30,7 +30,7 @@ class Canvas(app.Canvas):
 
         position = self.surface.position()
 
-        self.program = gloo.Program(shaders.vert_shader, shaders.frag_shader_triangle)
+        self.program = gloo.Program(shaders.water_vert_shader, shaders.water_frag_shader)
         self.program['a_position'] = position
         self.program['u_sky_texture'] = gloo.Texture2D(self.sky, wrapping='repeat', interpolation='linear')
         self.program['u_bed_texture'] = gloo.Texture2D(self.bed, wrapping='repeat', interpolation='linear')
@@ -42,9 +42,15 @@ class Canvas(app.Canvas):
         self.program['u_sun_diffused_color'] = self.sun.diffused_color()
         self.program['u_sun_reflected_color'] = self.sun.reflected_color()
 
-        self.program_point = gloo.Program(shaders.vert_shader, shaders.frag_shader_point)
+        self.program_point = gloo.Program(shaders.water_vert_shader, shaders.point_frag_shader)
         self.program_point['a_position'] = position
         self.program_point['u_eye_height'] = 3
+
+        self.program_bed = gloo.Program(shaders.bed_vert_shader, shaders.bed_frag_shader)
+        self.program_bed['a_position'] = position
+        self.program_bed["a_bed_depth"] = self.bed_resolver.bed_depths("beach")
+        self.program_bed['u_eye_height'] = 3
+        self.program_bed['u_bed_texture'] = gloo.Texture2D(self.bed, wrapping='repeat', interpolation='linear')
 
         # GUI set up
         self.camera = np.array([0, 0, 1])
@@ -75,6 +81,7 @@ class Canvas(app.Canvas):
         world_view = rotation
         self.program['u_world_view'] = world_view.T
         self.program_point['u_world_view'] = world_view.T
+        self.program_bed['u_world_view'] = world_view.T
 
     def rotate_camera(self, shift):
         right = np.cross(self.up, self.camera)
@@ -90,7 +97,7 @@ class Canvas(app.Canvas):
         self.program["u_bed_mult"] = 1 if self.bed_flag else 0
         self.program["u_depth_mult"] = 1 if self.depth_flag else 0
         self.program["u_sky_mult"] = 1 if self.sky_flag else 0
-        self.program["a_bed_depth"] = self.bed_resolver.bed_depths(self.bed_type)
+        self.program_bed["a_bed_depth"] = self.bed_resolver.bed_depths(self.bed_type)
 
     def activate_zoom(self):
         self.width, self.height = self.size
@@ -107,6 +114,7 @@ class Canvas(app.Canvas):
         # draw triangles
         gloo.set_state(depth_test=True)
         self.program.draw('triangles', self.triangles)
+        self.program_bed.draw('triangles', self.triangles)
 
         # draw points
         if self.are_points_visible:
@@ -188,9 +196,11 @@ class Canvas(app.Canvas):
         if event.delta[1] > 0:
             if self.program['u_eye_height'] > 0.5:
                 self.program['u_eye_height'] -= event.delta[1] * 0.2
+                self.program_bed['u_eye_height'] -= event.delta[1] * 0.2
         else:
             if self.program['u_eye_height'] < 5:
                 self.program['u_eye_height'] -= event.delta[1] * 0.2
+                self.program_bed['u_eye_height'] -= event.delta[1] * 0.2
 
     def screen_to_gl_coordinates(self, pos):
         return 2 * np.array(pos) / np.array(self.size) - 1
