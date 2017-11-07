@@ -53,7 +53,7 @@ void main() {
 
     v_sky_texture_coord = 0.05 * v_reflected.xy / v_reflected.z + vec2(0.5, 0.5);
 
-    // dont give a fuck what's going on here
+    // refractions and reflections
     vec3 cr = cross(normal, from_eye);
     float d = 1 - u_alpha * u_alpha * dot(cr, cr);
     float c2 = sqrt(d);

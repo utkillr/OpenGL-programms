@@ -33,7 +33,7 @@ void main() {
         float cos_angle = max(0, dot(u_sun_direction, normalize(v_reflected)));
         float reflected_intensity = u_reflected_mult * pow(cos_angle, 100);
 
-        vec3 ambient_water = vec3(0, 0.3, 0.5);
+        vec3 ambient_water = vec3(0, 0.3, 0.5) / 2;
         vec3 image_color = u_bed_mult * bed_color * v_mask + u_depth_mult * ambient_water * (1 - v_mask);
 
         float sky_mult = u_sky_mult;

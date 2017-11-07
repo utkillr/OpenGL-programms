@@ -152,7 +152,7 @@ class Canvas(app.Canvas):
             self.reflected_flag = not self.reflected_flag
             print("Show reflected image of sun:", self.reflected_flag)
 
-        elif event.key == 's':
+        elif event.key == 'b':
             if self.bed_type == "linspace":
                 self.bed_type = "beach"
             elif self.bed_type == "beach":
@@ -166,7 +166,7 @@ class Canvas(app.Canvas):
 
         elif event.key == 'p':
             self.stop_flag = not self.stop_flag
-            print("Stop:", self.stop_flag)
+            print("Pause:", self.stop_flag)
 
         self.apply_flags()
 
