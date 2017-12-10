@@ -31,4 +31,7 @@ class Bed(object):
         if shape == "beach":
             depths = np.linspace(-0.3, 0.3, 10000, dtype=np.float32).reshape([100, 100])
 
+        if shape == "normal":
+            depths = np.ones((50, 50), dtype=np.float32) * -0.5
+
         return depths

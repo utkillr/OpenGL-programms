@@ -5,7 +5,7 @@ from surface import Surface
 
 
 class CircularWavesSurface(Surface.Surface):
-    def __init__(self, size=(100, 100), max_height=0.1, wave_length=0.3, center=(0., 0.), speed=3):
+    def __init__(self, size=(50, 50), max_height=0.1, wave_length=0.3, center=(0., 0.), speed=3):
         assert isinstance(size, tuple)
         self.size = size
         self.wave = CircularWave.random_wave(max_height, wave_length, center, speed)

@@ -1,5 +1,4 @@
-import math
-from equation import *
+from triage.equation import *
 
 # y(x+h) = 2y(x) - y(x-h) + f(x, y)h^2
 def verlet(f, y, y_prev, x, h):
