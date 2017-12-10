@@ -9,7 +9,7 @@ size = (50, 50)
 
 
 # y(x+h) = y(x) + h/6 * (k1+2k2+2k3+k4)
-# x is vector h(t), v(t)
+# x is vector [h(t), v(t)]
 def runge_kutta(f, x, h):
     k_1 = k1(f, x, h)
     k_2 = k2(f, x, h, k_1)
@@ -34,12 +34,14 @@ def k4(f, x, h, k_3):
     return f(x + h * k_3)
 
 
+# f([h, v]) = [v, h'']
 def f(x):
     up = x[0]
     down = x[1]
     return np.array([down, derivative(up)])
 
 
+# h'' = Ldh
 def derivative(heights):
     der_heights = np.zeros(size, dtype=np.float32)
 
