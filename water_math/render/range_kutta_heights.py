@@ -6,6 +6,9 @@ v = 10
 delta = 0.1
 sigma = 0.1
 size = (50, 50)
+start_h = 2
+
+borders = True
 
 
 # y(x+h) = y(x) + h/6 * (k1+2k2+2k3+k4)
@@ -45,15 +48,27 @@ def f(x):
 def derivative(heights):
     der_heights = np.zeros(size, dtype=np.float32)
 
-    for i in range(0, size[0]):
-        for k in range(0, size[1]):
-            left  = heights[i][(k - 1 + size[1]) % size[1]]
-            right = heights[i][(k + 1) % size[1]]
-            up    = heights[(i - 1 + size[0]) % size[0]][k]
-            down  = heights[(i + 1) % size[0]][k]
-            this  = heights[i][k]
+    if borders:
+        for i in range(1, size[0] - 1):
+            for k in range(1, size[1] - 1):
+                left = heights[i][(k - 1 + size[1]) % size[1]]
+                right = heights[i][(k + 1) % size[1]]
+                up = heights[(i - 1 + size[0]) % size[0]][k]
+                down = heights[(i + 1) % size[0]][k]
+                this = heights[i][k]
 
-            der_heights[i][k] = ((v ** 2) * (sigma ** 2) / (delta ** 2)) * (left + right + up + down - 4 * this)
+                der_heights[i][k] = ((v ** 2) * (sigma ** 2) / (delta ** 2)) * (left + right + up + down - 4 * this)
+
+    else:
+        for i in range(0, size[0]):
+            for k in range(0, size[1]):
+                left  = heights[i][(k - 1 + size[1]) % size[1]]
+                right = heights[i][(k + 1) % size[1]]
+                up    = heights[(i - 1 + size[0]) % size[0]][k]
+                down  = heights[(i + 1) % size[0]][k]
+                this  = heights[i][k]
+
+                der_heights[i][k] = ((v ** 2) * (sigma ** 2) / (delta ** 2)) * (left + right + up + down - 4 * this)
     return der_heights
 
 
@@ -62,10 +77,10 @@ def getHeights(surface, h, h_der):
     if h is None:
         # return surface.height(0)
         h = np.ones(size, dtype=np.float32) * 0.2
-        h[size[0] // 2, size[1] // 2] = 1
-        h[size[0] // 2 + 1, size[1] // 2] = 1
-        h[size[0] // 2, size[1] // 2 + 1] = 1
-        h[size[0] // 2 + 1, size[1] // 2 + 1] = 1
+        h[size[0] // 2, size[1] // 2] = start_h
+        h[size[0] // 2 + 1, size[1] // 2] = start_h
+        h[size[0] // 2, size[1] // 2 + 1] = start_h
+        h[size[0] // 2 + 1, size[1] // 2 + 1] = start_h
 
         h_der = np.zeros(size, dtype=np.float32)
 
