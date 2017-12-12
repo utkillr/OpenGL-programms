@@ -5,6 +5,7 @@ from vispy import io
 import numpy as np
 
 from render.range_kutta_heights import getHeights
+from render.range_kutta_heights import getNormal
 
 import shaders
 from surface.Sun import Sun
@@ -92,7 +93,7 @@ class Canvas(app.Canvas):
         self.program["u_diffused_mult"] = 0.5 if self.diffused_flag else 0
         self.program["u_reflected_mult"] = 1.0 if self.reflected_flag else 0
         self.program["u_bed_mult"] = 1 if self.bed_flag else 0
-        self.program["u_depth_mult"] = 1 if self.depth_flag else 0
+        self.program["u_depth_mult"] = 2 if self.depth_flag else 0
         self.program["u_sky_mult"] = 1 if self.sky_flag else 0
         self.program["a_bed_depth"] = self.bed_resolver.bed_depths(self.bed_type)
 
@@ -106,7 +107,8 @@ class Canvas(app.Canvas):
         # height = self.surface.height(self.time)
         # normal = self.surface.normal(self.time)
         self.h, self.h_der = height, height_der = getHeights(surface=self.surface, h=self.h, h_der=self.h_der)
-        normal = np.ones((self.surface.size[0], self.surface.size[1], 2), dtype=np.float32)
+        # normal = np.ones((self.surface.size[0], self.surface.size[1], 2), dtype=np.float32)
+        normal = getNormal(height)
         self.program['a_height'] = height
         self.program['a_normal'] = normal
 

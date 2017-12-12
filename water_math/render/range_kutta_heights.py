@@ -2,9 +2,9 @@ import numpy as np
 from surface.Surface import Surface
 
 
-v = 30
-delta = 0.01
-sigma = 0.01
+v = 10
+delta = 0.1
+sigma = 0.1
 size = (50, 50)
 
 
@@ -61,13 +61,29 @@ def getHeights(surface, h, h_der):
     # first time
     if h is None:
         # return surface.height(0)
-        h = np.zeros(size, dtype=np.float32)
-        h[size[0] // 2, size[1] // 2] = 0.5
-        h[size[0] // 2 + 1, size[1] // 2] = 0.5
-        h[size[0] // 2, size[1] // 2 + 1] = 0.5
-        h[size[0] // 2 + 1, size[1] // 2 + 1] = 0.5
-        h_der = np.ones(size, dtype=np.float32)
+        h = np.ones(size, dtype=np.float32) * 0.2
+        h[size[0] // 2, size[1] // 2] = 1
+        h[size[0] // 2 + 1, size[1] // 2] = 1
+        h[size[0] // 2, size[1] // 2 + 1] = 1
+        h[size[0] // 2 + 1, size[1] // 2 + 1] = 1
+
+        h_der = np.zeros(size, dtype=np.float32)
+
         return np.array([h, h_der])
     # other times
     else:
-        return runge_kutta(f, np.array([h, np.zeros(size, dtype=np.float32)]), delta)
+        return runge_kutta(f, np.array([h, h_der]), sigma)
+
+
+def getNormal(heights):
+    normal = np.zeros((size[0], size[1], 2), dtype=np.float32)
+    for i in range(0, size[0]):
+        for j in range(0, size[1]):
+            left = heights[i][(j - 1 + size[1]) % size[1]]
+            right = heights[i][(j + 1) % size[1]]
+            up = heights[(i - 1 + size[0]) % size[0]][j]
+            down = heights[(i + 1) % size[0]][j]
+
+            normal[i][j][0] = (left + right) / (2 * delta)
+            normal[i][j][1] = (up + down) / (2 * delta)
+    return normal
