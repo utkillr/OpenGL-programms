@@ -3,7 +3,7 @@ import numpy as np
 
 class Base:
 
-    def __init__(self, v=10, delta=0.1, sigma=0.1, size=(50, 50), start_h=2, borders=False):
+    def __init__(self, v=100, delta=1, sigma=0.1, size=(50, 50), start_h=2, borders=False):
         self.v = v
         self.delta = delta
         self.sigma = sigma
@@ -68,3 +68,16 @@ class Base:
                 normal[i][j][1] = (up + down) / (2 * self.delta)
 
         return normal
+
+
+
+    def init_drop(self, part):
+        h = np.ones(self.size, dtype=np.float32) * 0.2
+        i_center = self.size[0] // 2
+        j_center = self.size[1] // 2
+        for i in range(self.size[0] // part, self.size[0] * (part - 1) // part):
+            for j in range(self.size[1] // part, self.size[1] * (part - 1) // part):
+                r = np.sqrt((i - i_center) ** 2 + (j - j_center) ** 2)
+                R = self.size[0] // 3
+                h[i][j] = 0.2 * (np.cos(np.pi * r / R) + 1) + 0.2
+        return h

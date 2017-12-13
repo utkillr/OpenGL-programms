@@ -10,6 +10,7 @@ from surface.Sun import Sun
 
 from render.methods.range_kutta import RangeKutta
 from render.methods.euler import Euler
+from render.methods.verlet import Verlet
 
 
 class Canvas(app.Canvas):
@@ -19,7 +20,7 @@ class Canvas(app.Canvas):
         self.width = size[0]
         self.height = size[1]
 
-        # set method
+        # set method - delta is 1. Parametrize just v and sigma
         self.resolver = RangeKutta()
 
         # initial time to count heights of points
@@ -107,7 +108,7 @@ class Canvas(app.Canvas):
     def on_draw(self, event):
         gloo.set_state(clear_color=(0, 0, 0, 1), blend=False)
         gloo.clear()
-        self.h, self.h_der = height, height_der = self.resolver.get_heights(self.h, self.h_der)
+        self.h, self.h_der = height, height_der = self.resolver.get_heights(self.h, self.h_der) if not self.stop_flag else (self.h, self.h_der)
         normal = self.resolver.get_normal(height)
         self.program['a_height'] = height
         self.program['a_normal'] = normal

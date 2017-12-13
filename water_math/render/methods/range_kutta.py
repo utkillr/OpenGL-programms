@@ -4,7 +4,7 @@ import numpy as np
 
 class RangeKutta(Base):
 
-    def __init__(self, v=10, delta=0.1, sigma=0.1, size=(50, 50), start_h=2, borders=False):
+    def __init__(self, v=100, delta=1, sigma=0.1, size=(50, 50), start_h=2, borders=False):
         super().__init__(v, delta, sigma, size, start_h, borders)
 
     # y(x+h) = y(x) + h/6 * (k1+2k2+2k3+k4)
@@ -31,7 +31,7 @@ class RangeKutta(Base):
     def get_heights(self, h, h_der):
         # first time
         if h is None:
-            h = self.init_h()
+            h = self.init_drop(4)
             h_der = np.zeros(self.size, dtype=np.float32)
             return np.array([h, h_der])
         # other times

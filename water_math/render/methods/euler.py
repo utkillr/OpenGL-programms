@@ -3,7 +3,7 @@ import numpy as np
 
 
 class Euler(Base):
-    def __init__(self, v=10, delta=0.05, sigma=0.01, size=(50, 50), start_h=1, borders=False):
+    def __init__(self, v=200, delta=1, sigma=0.02, size=(50, 50), start_h=1, borders=False):
         super().__init__(v, delta, sigma, size, start_h, borders)
 
     # y(x+h) = y(x) + h * f(x)
@@ -14,7 +14,7 @@ class Euler(Base):
     def get_heights(self, h, h_der):
         # first time
         if h is None:
-            h = self.init_h()
+            h = self.init_drop(4)
             h_der = np.zeros(self.size, dtype=np.float32)
             return np.array([h, h_der])
         # other times
