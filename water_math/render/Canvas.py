@@ -1,15 +1,15 @@
 
+import numpy as np
 from vispy import app
 from vispy import gloo
 from vispy import io
-import numpy as np
-
-from render.range_kutta_heights import getHeights
-from render.range_kutta_heights import getNormal
 
 import shaders
-from surface.Sun import Sun
 from surface.Bed import Bed
+from surface.Sun import Sun
+
+from render.methods.range_kutta import RangeKutta
+from render.methods.euler import Euler
 
 
 class Canvas(app.Canvas):
@@ -18,6 +18,9 @@ class Canvas(app.Canvas):
         # app window dimensions
         self.width = size[0]
         self.height = size[1]
+
+        # set method
+        self.resolver = RangeKutta()
 
         # initial time to count heights of points
         self.time = 0
@@ -104,11 +107,8 @@ class Canvas(app.Canvas):
     def on_draw(self, event):
         gloo.set_state(clear_color=(0, 0, 0, 1), blend=False)
         gloo.clear()
-        # height = self.surface.height(self.time)
-        # normal = self.surface.normal(self.time)
-        self.h, self.h_der = height, height_der = getHeights(surface=self.surface, h=self.h, h_der=self.h_der)
-        # normal = np.ones((self.surface.size[0], self.surface.size[1], 2), dtype=np.float32)
-        normal = getNormal(height)
+        self.h, self.h_der = height, height_der = self.resolver.get_heights(self.h, self.h_der)
+        normal = self.resolver.get_normal(height)
         self.program['a_height'] = height
         self.program['a_normal'] = normal
 
