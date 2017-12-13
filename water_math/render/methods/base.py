@@ -70,7 +70,6 @@ class Base:
         return normal
 
 
-
     def init_drop(self, part):
         h = np.ones(self.size, dtype=np.float32) * 0.2
         i_center = self.size[0] // 2
