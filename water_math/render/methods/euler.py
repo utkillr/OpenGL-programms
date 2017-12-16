@@ -11,12 +11,12 @@ class Euler(Base):
     def euler(self, f, x, h):
         return x + h * f(x)
 
-    def get_heights(self, h, h_der):
+    def get_heights(self, h_desc):
         # first time
-        if h is None:
+        if h_desc is None:
             h = self.init_drop(4)
             h_der = np.zeros(self.size, dtype=np.float32)
             return np.array([h, h_der])
         # other times
         else:
-            return self.euler(self.f, np.array([h, h_der]), self.sigma)
+            return self.euler(self.f, h_desc, self.sigma)

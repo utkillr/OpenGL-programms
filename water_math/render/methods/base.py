@@ -51,10 +51,10 @@ class Base:
         return der_heights
 
 
-    def get_heights(self, h, h_der):
+    def get_heights(self, h_desc):
         pass
     
-    def get_shallow_heights(self, h, U, V):
+    def get_shallow_heights(self, h_desc):
         pass
 
     def get_normal(self, heights):

@@ -29,8 +29,7 @@ class Canvas(app.Canvas):
         app.Canvas.__init__(self, size=(self.width, self.height), title='Circular Waves Surface Simulator')
 
         self.surface = surface
-        self.h = None
-        self.h_der = None
+        self.h_description = None
         self.sky = io.read_png(sky)
         self.bed = io.read_png(bed)
         self.triangles = gloo.IndexBuffer(self.surface.triangulation())
@@ -108,7 +107,8 @@ class Canvas(app.Canvas):
     def on_draw(self, event):
         gloo.set_state(clear_color=(0, 0, 0, 1), blend=False)
         gloo.clear()
-        self.h, self.h_der = height, height_der = self.resolver.get_heights(self.h, self.h_der) if not self.stop_flag else (self.h, self.h_der)
+        self.h_description = self.resolver.get_heights(self.h_description) if not self.stop_flag else self.h_description
+        height, height_der = self.h_description
         normal = self.resolver.get_normal(height)
         self.program['a_height'] = height
         self.program['a_normal'] = normal

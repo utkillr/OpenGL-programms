@@ -28,12 +28,23 @@ class RangeKutta(Base):
     def k4(self, f, x, h, k_3):
         return f(x + h * k_3)
 
-    def get_heights(self, h, h_der):
+    def get_heights(self, h_desc):
         # first time
-        if h is None:
+        if h_desc is None:
             h = self.init_drop(4)
             h_der = np.zeros(self.size, dtype=np.float32)
             return np.array([h, h_der])
         # other times
         else:
-            return self.runge_kutta(self.f, np.array([h, h_der]), self.sigma)
+            return self.runge_kutta(self.f, h_desc, self.sigma)
+
+    def get_shallow_heights(self, h_desc):
+        # first time
+        if h is None:
+            h = self.init_drop(4)
+            U = np.zeros(self.size, dtype=np.float32)
+            V = np.zeros(self.size, dtype=np.float32)
+            return np.array([h, U, V])
+        # other times
+        else:
+            return self.runge_kutta(self.f_shallow, np.array([h, U, V]), self.sigma)
