@@ -10,6 +10,7 @@ class Base:
         self.size = size
         self.start_h = start_h
         self.borders = borders
+        self.g = 9.81
 
     def init_h(self):
         h = np.ones(self.size, dtype=np.float32) * 0.2
@@ -21,9 +22,7 @@ class Base:
 
     # f([h, v]) = [v, h'']
     def f(self, x):
-        up = x[0]
-        down = x[1]
-        return np.array([down, self.derivative(up)])
+        return np.array([x[1], self.derivative(x[0])])
 
     # h'' = Ldh
     def derivative(self, heights):
@@ -54,6 +53,9 @@ class Base:
 
     def get_heights(self, h, h_der):
         pass
+    
+    def get_shallow_heights(self, h, U, V):
+        pass
 
     def get_normal(self, heights):
         normal = np.zeros((self.size[0], self.size[1], 2), dtype=np.float32)
@@ -80,3 +82,58 @@ class Base:
                 R = self.size[0] // 3
                 h[i][j] = 0.2 * (np.cos(np.pi * r / R) + 1) + 0.2
         return h
+
+    def der_x(self, x):
+        der_x = np.zeros(self.size, dtype=np.float32)
+
+        min_i = 0
+        max_i = self.size[0]
+
+        if self.borders:
+            max_i -= 1
+            min_i += 1
+
+        for i in range(min_i, max_i):
+            for k in range(0, self.size[1]):
+                up = x[(i + 1 + self.size[0]) % self.size[0]][k]
+                this = x[i][k]
+                der_x[i][k] = (up - this) / self.delta
+
+        return der_x
+
+    def der_y(self, y):
+        der_y = np.zeros(self.size, dtype=np.float32)
+
+        min_i = 0
+        max_i = self.size[0]
+
+        if self.borders:
+            max_i -= 1
+            min_i += 1
+
+        for k in range(0, self.size[1]):
+            for i in range(min_i, max_i):
+                right = y[k][(i + 1) % self.size[0]]
+                this = y[k][i]
+                der_y[k][i] = (right - this) / self.delta
+
+        return der_y
+
+    def f_shallow(self, x):
+        h = x[0]
+        U = x[1]
+        V = x[2]
+        Ug = np.power(U, 2) / h + self.g * np.power(h, 2) / 2
+        Vg = np.power(V, 2) / h + self.g * np.power(h, 2) / 2
+        UVh = np.divide(np.multiply(U, V), h)
+
+        der_U = self.der_x(U)
+        der_V = self.der_y(V)
+        der_Ug = self.der_x(Ug)
+        der_Vg = self.der_y(Vg)
+        der_Uh = self.der_x(UVh)
+        der_Vh = self.der_y(UVh)
+
+        return np.array([-(der_U + der_V),
+                         -(der_Ug + der_Uh),
+                         -(der_Vg + der_Vh)]) / self.delta
