@@ -21,7 +21,7 @@ class Canvas(app.Canvas):
         self.height = size[1]
 
         # set method - delta is 1. Parametrize just v and sigma
-        self.resolver = RangeKutta()
+        self.resolver = Euler(method="bubble", is_shallow=False)
 
         # initial time to count heights of points
         self.time = 0
@@ -108,7 +108,7 @@ class Canvas(app.Canvas):
         gloo.set_state(clear_color=(0, 0, 0, 1), blend=False)
         gloo.clear()
         self.h_description = self.resolver.get_heights(self.h_description) if not self.stop_flag else self.h_description
-        height, height_der = self.h_description
+        height = self.h_description[0]
         normal = self.resolver.get_normal(height)
         self.program['a_height'] = height
         self.program['a_normal'] = normal

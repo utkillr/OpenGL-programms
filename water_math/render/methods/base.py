@@ -1,24 +1,34 @@
 import numpy as np
+from render.methods.generator import HeightsGenerator
 
 
 class Base:
 
-    def __init__(self, v=100, delta=1, sigma=0.1, size=(50, 50), start_h=2, borders=False):
+    def __init__(self, method, v=100, delta=1, sigma=0.1, size=(50, 50), max_height=0.4, min_height=0.2, borders=False, is_shallow=False):
+        self.method = method
         self.v = v
         self.delta = delta
         self.sigma = sigma
         self.size = size
-        self.start_h = start_h
+        self.max_height = max_height
+        self.min_height = min_height
         self.borders = borders
+        self.is_shallow = is_shallow
         self.g = 9.81
+        self.generator = HeightsGenerator(size)
 
-    def init_h(self):
-        h = np.ones(self.size, dtype=np.float32) * 0.2
-        h[self.size[0] // 2, self.size[1] // 2] = self.start_h
-        h[self.size[0] // 2 + 1, self.size[1] // 2] = self.start_h
-        h[self.size[0] // 2, self.size[1] // 2 + 1] = self.start_h
-        h[self.size[0] // 2 + 1, self.size[1] // 2 + 1] = self.start_h
-        return h
+        self.methods = {
+            "peak":         self.generator.peak,
+            "bubble":       self.generator.bubble
+        }
+
+    def init(self, max_height=0.4, min_height=0.2, part=4):
+        params = {
+            "max_height":   max_height,
+            "min_height":   min_height,
+            "part":         part
+        }
+        return self.methods[self.method](params)
 
     # f([h, v]) = [v, h'']
     def f(self, x):
@@ -53,9 +63,6 @@ class Base:
 
     def get_heights(self, h_desc):
         pass
-    
-    def get_shallow_heights(self, h_desc):
-        pass
 
     def get_normal(self, heights):
         normal = np.zeros((self.size[0], self.size[1], 2), dtype=np.float32)
@@ -70,18 +77,6 @@ class Base:
                 normal[i][j][1] = (up + down) / (2 * self.delta)
 
         return normal
-
-
-    def init_drop(self, part):
-        h = np.ones(self.size, dtype=np.float32) * 0.2
-        i_center = self.size[0] // 2
-        j_center = self.size[1] // 2
-        for i in range(self.size[0] // part, self.size[0] * (part - 1) // part):
-            for j in range(self.size[1] // part, self.size[1] * (part - 1) // part):
-                r = np.sqrt((i - i_center) ** 2 + (j - j_center) ** 2)
-                R = self.size[0] // 3
-                h[i][j] = 0.2 * (np.cos(np.pi * r / R) + 1) + 0.2
-        return h
 
     def der_x(self, x):
         der_x = np.zeros(self.size, dtype=np.float32)
