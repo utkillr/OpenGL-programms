@@ -1,5 +1,5 @@
 from render.methods.base import Base
-from render.methods.range_kutta import RangeKutta
+from render.methods.runge_kutta import RungeKutta
 import numpy as np
 
 class Verlet(Base):
@@ -21,7 +21,7 @@ class Verlet(Base):
             return np.array([h, h_der])
         # second time
         elif np.array_equal(h_desc[0], self.init()):
-            new_h_desc = RangeKutta(self.method, self.v, self.delta, self.sigma, self.size, self.max_height, self.min_height, self.borders, self.is_shallow).get_heights(h_desc)
+            new_h_desc = RungeKutta(self.method, self.v, self.delta, self.sigma, self.size, self.max_height, self.min_height, self.borders, self.is_shallow).get_heights(h_desc)
             self.prev = h_desc
             return new_h_desc
         # other times

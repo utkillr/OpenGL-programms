@@ -19,7 +19,8 @@ class Base:
 
         self.methods = {
             "peak":         self.generator.peak,
-            "bubble":       self.generator.bubble
+            "bubble":       self.generator.bubble,
+            "vertical":     self.generator.vertical
         }
 
     def init(self, max_height=0.4, min_height=0.2, part=4):

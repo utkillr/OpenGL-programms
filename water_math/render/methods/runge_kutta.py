@@ -2,7 +2,7 @@ from render.methods.base import Base
 import numpy as np
 
 
-class RangeKutta(Base):
+class RungeKutta(Base):
 
     def __init__(self, method, v=100, delta=1, sigma=0.1, size=(50, 50), max_height=0.4, min_height=0.2, borders=False, is_shallow=False):
         super().__init__(method, v, delta, sigma, size, max_height, min_height, borders, is_shallow)

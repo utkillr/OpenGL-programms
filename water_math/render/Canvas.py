@@ -8,7 +8,7 @@ import shaders
 from surface.Bed import Bed
 from surface.Sun import Sun
 
-from render.methods.range_kutta import RangeKutta
+from render.methods.runge_kutta import RungeKutta
 from render.methods.euler import Euler
 from render.methods.verlet import Verlet
 
@@ -21,7 +21,7 @@ class Canvas(app.Canvas):
         self.height = size[1]
 
         # set method - delta is 1. Parametrize just v and sigma
-        self.resolver = Euler(method="bubble", is_shallow=False)
+        self.resolver = RungeKutta(method="vertical", is_shallow=False)
 
         # initial time to count heights of points
         self.time = 0
