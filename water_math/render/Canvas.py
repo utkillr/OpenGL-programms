@@ -21,7 +21,7 @@ class Canvas(app.Canvas):
         self.height = size[1]
 
         # set method - delta is 1. Parametrize just v and sigma
-        self.resolver = RungeKutta(method="vertical", is_shallow=False)
+        self.resolver = RungeKutta(method="peak", is_shallow=False, borders=True)
 
         # initial time to count heights of points
         self.time = 0

@@ -36,31 +36,26 @@ class Base:
         return np.array([x[1], self.derivative(x[0])])
 
     # h'' = Ldh
+    # !!! indices arrays: 4 arrays
+    # No cycles. Indices rolling
+
     def derivative(self, heights):
         der_heights = np.zeros(self.size, dtype=np.float32)
 
-        min_i = 0
-        min_k = 0
-        max_i = self.size[0]
-        max_k = self.size[1]
+        if not self.borders:
+            for i in range(0, self.size[0]):
+                for k in range(0, self.size[1]):
+                    left = heights[i][(k - 1 + self.size[1]) % self.size[1]]
+                    right = heights[i][(k + 1) % self.size[1]]
+                    up = heights[(i - 1 + self.size[0]) % self.size[0]][k]
+                    down = heights[(i + 1) % self.size[0]][k]
+                    this = heights[i][k]
+                    der_heights[i][k] = ((self.v ** 2) * (self.sigma ** 2) / (self.delta ** 2)) * (left + right + up + down - 4 * this)
 
-        if self.borders:
-            max_i -= 1
-            max_k -= 1
-            min_i += 1
-            min_k += 1
-
-        for i in range(min_i, max_i):
-            for k in range(min_k, max_k):
-                left = heights[i][(k - 1 + self.size[1]) % self.size[1]]
-                right = heights[i][(k + 1) % self.size[1]]
-                up = heights[(i - 1 + self.size[0]) % self.size[0]][k]
-                down = heights[(i + 1) % self.size[0]][k]
-                this = heights[i][k]
-                der_heights[i][k] = ((self.v ** 2) * (self.sigma ** 2) / (self.delta ** 2)) * (left + right + up + down - 4 * this)
+        else:
+            der_heights[1:-1, 1:-1] += ((self.v ** 2) * (self.sigma ** 2) / (self.delta ** 2)) * (heights[2:, 1:-1] + heights[0:-2, 1:-1] + heights[1:-1, 2:] + heights[1:-1, 0:-2] - 4 * heights[1:-1, 1:-1])
 
         return der_heights
-
 
     def get_heights(self, h_desc):
         pass

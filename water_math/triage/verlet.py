@@ -9,7 +9,7 @@ if __name__ == "__main__":
     h = 0.0001
     xlist = [(0 + h * i) for i in range(0, 100)]
 
-    prev_prev_y = y(-h)
+
     prev_y = 1
     for x in xlist:
         real_y = y(x + h)
