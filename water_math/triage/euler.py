@@ -1,8 +1,9 @@
 from triage.equation_1 import *
 
-# y(x+h) = 2y(x) - y(x-h) + f(x, y)h^2
-def verlet(f, y, y_prev, x, h):
-    return 2 * y - y_prev + ff(x, y) * h * h
+
+# y(x+h) = y(x) + h * f(x)
+def euler(f, y, x, h):
+    return y + h * f(x, y)
 
 
 if __name__ == "__main__":
@@ -13,7 +14,7 @@ if __name__ == "__main__":
     prev_y = 1
     for x in xlist:
         real_y = y(x + h)
-        new_y = verlet(f, prev_y, prev_prev_y, x, h)
+        new_y = euler(f, prev_y, x, h)
         prev_prev_y = prev_y
         prev_y = new_y
         print("Error: " + str((math.fabs(real_y - new_y)) / math.fabs(real_y)))

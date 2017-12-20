@@ -1,47 +1,65 @@
 from triage.runge_kutta import runge_kutta
 from triage.verlet import verlet
-from triage.equation import y, f
+from triage.euler import euler
+from triage.equation_1 import y, f
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 
 if __name__ == "__main__":
+    avg_errors = {
+        "euler": [],
+        "verlet": [],
+        "runge": []
+    }
 
-    runge_errors_array = []
-    verlet_errors_array = []
-    h_array = []
+    hs = []
 
     for h in np.linspace(-5, 5, 1000):
         print(str(h))
-        errors_verlet = []
-        errors_runge = []
-        prev_prev_y_verlet = y(-h)
-        prev_y_verlet = y(0)
-        prev_y_runge = y(0)
+        errors = {
+            "euler": [],
+            "verlet": [],
+            "runge": []
+        }
+        prev_prev_y = y(-h)
+        prev_y = {
+            "euler": y(0),
+            "verlet": y(0),
+            "runge": y(0)
+        }
         xlist = [(0 + h * i) for i in range(0, 100)]
         for x in xlist:
             real_y = y(x + h)
 
-            new_y_runge = runge_kutta(f, prev_y_runge, x, h)
-            prev_y_runge = new_y_runge
-            errors_runge.append(np.abs(real_y - new_y_runge))
+            new_y = {
+                "euler": euler(f, prev_y["euler"], x, h),
+                "verlet": verlet(f, prev_y["verlet"], prev_prev_y, x, h),
+                "runge": runge_kutta(f, prev_y["runge"], x, h)
+            }
 
-            new_y_verlet = verlet(f, prev_y_verlet, prev_prev_y_verlet, x, h)
-            prev_prev_y_verlet = prev_y_verlet
-            prev_y_verlet = new_y_verlet
-            errors_verlet.append(np.abs(real_y - new_y_verlet))
+            prev_y = {
+                "euler": new_y["euler"],
+                "verlet": new_y["verlet"],
+                "runge": new_y["runge"]
+            }
+            prev_prev_y = prev_y["verlet"]
 
-        error_runge = np.log10(sum(errors_runge) / len(errors_runge))
-        error_verlet = np.log10(sum(errors_verlet) / len(errors_verlet))
+            errors["euler"].append(np.abs(real_y - new_y["euler"]))
+            errors["verlet"].append(np.abs(real_y - new_y["verlet"]))
+            errors["runge"].append(np.abs(real_y - new_y["runge"]))
 
-        runge_errors_array.append(error_runge)
-        verlet_errors_array.append(error_verlet)
-        h_array.append(h)
+        avg_errors["euler"].append(np.abs(np.log(sum(errors["euler"]) / len(errors["euler"]))))
+        avg_errors["verlet"].append(np.abs(np.log(sum(errors["verlet"]) / len(errors["verlet"]))))
+        avg_errors["runge"].append(np.abs(np.log(sum(errors["runge"]) / len(errors["runge"]))))
+        hs.append(h)
 
-    runge_errors_array = runge_errors_array / np.max(runge_errors_array)
-    verlet_errors_array = verlet_errors_array / np.max(verlet_errors_array)
+    avg_errors["euler"] = avg_errors["euler"] / np.max(avg_errors["euler"])
+    avg_errors["verlet"] = avg_errors["verlet"] / np.max(avg_errors["verlet"])
+    avg_errors["runge"] = avg_errors["runge"] / np.max(avg_errors["runge"])
 
-    plt.plot(h_array, runge_errors_array, color="g")
-    plt.plot(h_array, verlet_errors_array, color="r")
+    plt.plot(hs, avg_errors["euler"], color="r")
+    plt.plot(hs, avg_errors["verlet"], color="y")
+    plt.plot(hs, avg_errors["runge"], color="g")
     plt.show()

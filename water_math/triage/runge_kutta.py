@@ -1,4 +1,4 @@
-from triage.equation import *
+from triage.equation_1 import *
 
 # y(x+h) = y(x) + h/6 * (k1+2k2+2k3+k4)
 def runge_kutta(f, y, x, h):
