@@ -23,6 +23,8 @@ class Base:
             "vertical":     self.generator.vertical
         }
 
+        self.indices = Base.get_indices(size)
+
     def init(self, max_height=0.4, min_height=0.2, part=4):
         params = {
             "max_height":   max_height,
@@ -43,19 +45,17 @@ class Base:
         der_heights = np.zeros(self.size, dtype=np.float32)
 
         if not self.borders:
-            for i in range(0, self.size[0]):
-                for k in range(0, self.size[1]):
-                    left = heights[i][(k - 1 + self.size[1]) % self.size[1]]
-                    right = heights[i][(k + 1) % self.size[1]]
-                    up = heights[(i - 1 + self.size[0]) % self.size[0]][k]
-                    down = heights[(i + 1) % self.size[0]][k]
-                    this = heights[i][k]
-                    der_heights[i][k] = ((self.v ** 2) * (self.sigma ** 2) / (self.delta ** 2)) * (left + right + up + down - 4 * this)
+            der_heights += (
+                heights[self.indices["left"][0], self.indices["left"][1]] +
+                heights[self.indices["right"][0], self.indices["right"][1]] +
+                heights[self.indices["up"][0], self.indices["up"][1]] +
+                heights[self.indices["down"][0], self.indices["down"][1]] -
+                4 * heights[self.indices["this"][0], self.indices["this"][1]])
 
         else:
-            der_heights[1:-1, 1:-1] += ((self.v ** 2) * (self.sigma ** 2) / (self.delta ** 2)) * (heights[2:, 1:-1] + heights[0:-2, 1:-1] + heights[1:-1, 2:] + heights[1:-1, 0:-2] - 4 * heights[1:-1, 1:-1])
+            der_heights[1:-1, 1:-1] += (heights[2:, 1:-1] + heights[0:-2, 1:-1] + heights[1:-1, 2:] + heights[1:-1, 0:-2] - 4 * heights[1:-1, 1:-1])
 
-        return der_heights
+        return ((self.v ** 2) * (self.sigma ** 2) / (self.delta ** 2)) * der_heights
 
     def get_heights(self, h_desc):
         pass
@@ -128,3 +128,28 @@ class Base:
         return np.array([-(der_U + der_V),
                          -(der_Ug + der_Uh),
                          -(der_Vg + der_Vh)]) / self.delta
+
+
+    @staticmethod
+    def get_indices(size):
+        left = np.indices(size, dtype=np.int)
+        left[0] = (left[0] + 1) % size[0]
+
+        right = np.indices(size, dtype=np.int)
+        right[0] = (right[0] - 1 + size[0]) % size[0]
+
+        down = np.indices(size, dtype=np.int)
+        down[1] = (down[1] + 1) % size[1]
+
+        up = np.indices(size, dtype=np.int)
+        up[1] = (up[1] - 1 + size[1]) % size[1]
+
+        this = np.indices(size, dtype=np.int)
+
+        return {
+            "left": left,
+            "right": right,
+            "up": up,
+            "down": down,
+            "this": this
+        }
